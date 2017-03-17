@@ -1,0 +1,31 @@
+load_input;
+def &L1 = read_lang 0;
+def &L2 = read_lang 1;
+def &L3 = read_lang 2;
+def #k = read_int 3;
+
+def &L12 = lang_union &L1 &L2;
+def #length12 = lang_length &L12; 
+def &L13 = lang_union &L1 &L3;
+def #length13 = lang_length &L13;
+
+def &res1 = {};
+def #count = 0;
+while (#count < #length12 && #count < #k) do
+	def $s = lang_get &L12 #count;
+	$s = $s ^ "a";
+	&res1 = lang_add &res1 $s;
+	#count = #count + 1
+end;
+
+def &res2 = {};
+#count = 0;
+while (#count < #length13 && #count < #k) do
+	def $s = lang_get &L13 #count;
+	$s = $s ^ "b";
+	&res2 = lang_add &res2 $s;
+	#count = #count + 1
+end;
+
+print_lang_line &res1 until #k;
+print_lang_line &res2 until #k;

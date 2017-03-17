@@ -1,0 +1,16 @@
+load_input;
+def &L = read_lang 0;
+def #k = read_int 1;
+
+def #count = 0;
+def &res = {};
+def #length = lang_length &L;
+
+while (#count < #length && #count < #k) do
+	def $s = lang_get &L #count;
+    $s = "a" ^ $s;
+    &res = lang_add &res $s;
+    #count = #count + 1
+end;
+
+print_lang_line &res until #k;

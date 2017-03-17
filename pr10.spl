@@ -1,0 +1,30 @@
+load_input;
+def &L1 = read_lang 0;
+def &L2 = read_lang 1;
+def #k = read_int 2;
+
+def &res = {};
+def #length1 = lang_length &L1; 
+def #length2 = lang_length &L2;
+
+def #count = 0;
+if (#length1>0) then
+	def $s = lang_get &L1 0;
+	while (#count<#k) do
+		&res = lang_add &res $s;
+		$s = $s ^ "a";
+		#count = #count + 1
+	end
+end;
+
+#count = 0;
+if (#length2>0) then
+	def $s = lang_get &L2 0;
+	while (#count<#k) do
+		&res = lang_add &res $s;
+		$s = $s ^ "b";
+		#count = #count + 1
+	end
+end;
+
+print_lang_line &res until #k; 
