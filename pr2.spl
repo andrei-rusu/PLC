@@ -1,11 +1,15 @@
 load_input;
+
+/* reads the 3 languages and the k */
 def &L1 = read_lang 0;
 def &L2 = read_lang 1;
 def &L3 = read_lang 2;
 def #k = read_int 3;
 
+/* does the union of L1 and L2, followed by the union of L1 and L3 */
 def &L12 = lang_union &L1 &L2;
 def &L13 = lang_union &L1 &L3;
 
+/* prints the first k elements of the resulted languages */
 print_lang_line &L12 until #k;
 print_lang_line &L13 until #k;

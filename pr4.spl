@@ -1,18 +1,27 @@
 load_input;
+
+/*reading the language and k */
 def &L = read_lang 0;
 def #k = read_int 1;
 
+/* &res variable to store the language to be returned*/
 def #count = 0;
 def &res = {};
 def #length = lang_length &L; 
 
+/* if the language is not empty */ 
 if (#length>0) then
+
+	/* in the var s we construct the elements of the resulted language */
 	def $s = lang_get &L 0;
 	while (#count<#k) do
+	
+		/* add the newly created element to the language and create the next element */
 		&res = lang_add &res $s;
 		$s = $s ^ "a";
 		#count = #count + 1
 	end
 end;
 
+/* prints the resulted language */
 print_lang_line &res until #k; 

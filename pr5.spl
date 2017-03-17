@@ -1,16 +1,25 @@
 load_input;
+
+/*reading the language and k */
 def &L = read_lang 0;
 def #k = read_int 1;
 
 def #count = 0;
 def #length = lang_length &L;
+
+/*the language of all words of length 2 over a,b,c */
 def &L2 = {"aa", "ab", "ac", "ba", "bb", "bc", "ca", "cb", "cc"};
 def &res = {};
 
+/*iterates through the first min(k, length L) elements in the language */
 while (#count < #length && #count < #k) do
+
+	/* gets the element at position #count */
 	def $s = lang_get &L #count;
 	#count = #count + 1;
 	def #innerCount = 0;
+	
+	/* adds to the new language the 9 words resulted by concatenation with the element from the initial language */
 	while (#innerCount < 9) do
 		def $newEl = $s ^ lang_get &L2 #innerCount;
 		#innerCount = #innerCount + 1;
@@ -18,4 +27,5 @@ while (#count < #length && #count < #k) do
 	end
 end;
 
+/* prints the first k elements of the resulted language */
 print_lang_line &res until #k;

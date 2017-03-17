@@ -9,10 +9,12 @@ def #length2 = lang_length &L2;
 def #length1Copy = #length1;
 def #length2Copy = #length2;
 
+def #maxLengthRes = #length1 + #length2;
+
 def &res = {};
 def #count = 0;
 
-while (#count < #k) do
+while (#count < #k && #count < #maxLengthRes) do
 	if (#length1 > 0) then
 		def $s = lang_get &L1 (#length1Copy - #length1);
 		$s = $s ^ "a";
