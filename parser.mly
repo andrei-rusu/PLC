@@ -36,6 +36,8 @@
 %left SEQ
 %left OR
 %left AND
+%nonassoc LENGTH GET
+%nonassoc ADD REMOVE UNION INTER DIFF
 %nonassoc LESSTHAN GREATERTHAN EQUALS
 %nonassoc LOWER_THAN_ELSE
 %nonassoc IF THEN ELSE
@@ -175,15 +177,15 @@ language_val: LCURLY language RCURLY					{ Language $2 }
  
 ;
 
-language:												{ SetConstructor.empty }
+language:	/* Empty lang */							{ SetConstructor.empty }
  | language STRING										{ SetConstructor.add $2 $1 }
  | language SEP STRING									{ SetConstructor.add $3 $1 }
  
 ;
  
 language_op: language_val								{ LanguageVal $1 }
- | ADD language_val string_val 							{ LangAdd ($2, $3) }
- | REMOVE language_val string_val						{ LangRemove ($2, $3) }
+ | ADD language_val string_op 							{ LangAdd ($2, $3) }
+ | REMOVE language_val string_op						{ LangRemove ($2, $3) }
  | UNION language_val language_val						{ LangUnion ($2, $3) }
  | INTER language_val language_val						{ LangInter ($2, $3) }
  | DIFF language_val language_val						{ LangDiff ($2, $3) }

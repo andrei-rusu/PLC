@@ -22,16 +22,19 @@ type languageVal =
 	| ReadLang of int
 ;;
 
+(* Mutually recursive operations *)
 type languageTypeOp =
 	| LanguageVal of languageVal
-	| LangAdd of languageVal * stringVal
-	| LangRemove of languageVal * stringVal
+	| LangAdd of languageVal * stringTypeOp
+	| LangRemove of languageVal * stringTypeOp
 	| LangUnion of languageVal * languageVal
 	| LangInter of languageVal * languageVal
 	| LangDiff of languageVal * languageVal
-;;
-
-type intTypeOp =
+and stringTypeOp =
+	| StringVal of stringVal
+	| Concat of stringTypeOp * stringTypeOp
+	| LangGet of languageTypeOp * intTypeOp
+and intTypeOp =
 	| IntVal of intVal
 	| Plus of intTypeOp * intTypeOp
 	| Minus of intTypeOp * intTypeOp
@@ -42,6 +45,7 @@ type intTypeOp =
 	| LangLength of languageTypeOp
 ;;
 
+
 type booleanTypeOp =
 	| BooleanVal of booleanVal
 	| Not of booleanTypeOp
@@ -51,13 +55,6 @@ type booleanTypeOp =
 	| LessThan of intTypeOp * intTypeOp
 	| GreaterThan of intTypeOp * intTypeOp
 ;;
-
-type stringTypeOp =
-	| StringVal of stringVal
-	| Concat of stringTypeOp * stringTypeOp
-	| LangGet of languageTypeOp * intTypeOp
-;;
-
 
 type operationOnTypes =
 	| BooleanTypeOp of booleanTypeOp

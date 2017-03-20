@@ -1,9 +1,3 @@
-exception LookupError ;;
-exception TypeError ;;
-exception UnboundVariableError;;
-exception Terminated ;;
-exception StuckTerm ;;
-exception NonBaseTypeResult;;
 
 exception BreakLoop;;
 exception IllegalArg;;
@@ -13,7 +7,7 @@ open AbstractSyntaxTree;;
 open Printf;;
 open Str;;
 
-(* Defining the string set constructor module *)
+(* Defining the string set and map factory modules *)
 module SetConstructor = Set.Make(String);;
 module MapConstructor = Map.Make(String);;
 
@@ -23,6 +17,7 @@ type result = BooleanResult of bool | IntegerResult of int | StringResult of str
 
 (* ----------------- Useful Functions ---------------------*)
 
+(* Dealing with the external representation of an empty string *)
 let replaceColonWithEmpty (element:string) =
 	if (element = ":") then ""
 	else element
@@ -46,6 +41,7 @@ let lang_of_string (str:string) =
 lang_of_list (list_of_string str);;
 
 
+(* Input processing functionality *)
 let lstOfLines = ref [];;
 
 let processInput () = 
@@ -58,16 +54,15 @@ let processInput () =
 ;;
 
 
-
 (* Maps holding variable bindings *)
-
 let boolMap = ref MapConstructor.empty;;
 let intMap = ref MapConstructor.empty;;
 let strMap = ref MapConstructor.empty;;
 let langMap = ref MapConstructor.empty;;
 
 
-(* Function to look up the type of a string name variable in a map of bindings *)
+
+(* Functions to look up the type of a string name variable in a map of bindings *)
 let lookupBool (var:string) =  
 	try MapConstructor.find var !boolMap
 	with Not_found -> failwith ("Variable " ^ var ^ " not found!")
@@ -107,7 +102,7 @@ let replaceBinding map (var: string) value =
 
 
 
-(* ----------------- Useful Functions --------------------- *)
+(* ----------------- End Useful Functions --------------------- *)
 
 
 (* ----------------- Reading Functions --------------------- *)
@@ -127,6 +122,7 @@ let readLang (x: int) =
 
 (* ----------------- Printing Functions --------------------- *)
 
+(* Limits the elements being printed from a language *)
 let print_language (s:SetConstructor.t) (lim:int) = 
 	let length = SetConstructor.cardinal s in
 	let x = ref 1 in
@@ -139,6 +135,7 @@ let print_language (s:SetConstructor.t) (lim:int) =
 	print_string "{" ; SetConstructor.iter print_set_element s ; print_string "}" ; flush stdout
 ;;
 
+(* General purpose printing function *)
 let print_type_op e = (match e with
 	| BooleanResult b -> printf "%B" b
 	| IntegerResult i -> print_int i
@@ -151,7 +148,7 @@ let print_type_op e = (match e with
 
 (* ----------------- End Printing Functions --------------------- *)
 
-(* ----------------- End Evaluating expressions --------------------- *)
+(* ----------------- Evaluating expressions --------------------- *)
 
 let evalBool e = match e with
 	| Boolean b -> b
@@ -179,27 +176,33 @@ let evalLang e = match e with
 ;;
 
 
-let evalLangOp e = match e with
+(* Mutually recursive operations *)
+let rec evalLangOp e = match e with
 	| LanguageVal langValue -> evalLang langValue
 	| LangAdd (lang, str) -> let langOpValue = evalLang lang in
-						     let strOpValue = evalString str in
+						     let strOpValue = evalStrOp str in
 							 SetConstructor.add strOpValue langOpValue
 	| LangRemove (lang, str) -> let langOpValue = evalLang lang in
-								let strValue = evalString str in
+								let strValue = evalStrOp str in
 								SetConstructor.remove strValue langOpValue 
 	| LangUnion (lang1, lang2) -> let langOpValue1 = evalLang lang1 in
 								  let langOpValue2 = evalLang lang2 in
-								SetConstructor.union langOpValue1 langOpValue2
+								  SetConstructor.union langOpValue1 langOpValue2
 	| LangInter (lang1, lang2) -> let langOpValue1 = evalLang lang1 in
 								  let langOpValue2 = evalLang lang2 in
 								  SetConstructor.inter langOpValue1 langOpValue2 
 	| LangDiff (lang1, lang2) -> let langOpValue1 = evalLang lang1 in
 								 let langOpValue2 = evalLang lang2 in
 								 SetConstructor.diff langOpValue1 langOpValue2
-;;
-
-
-let rec evalIntOp e = match e with
+and evalStrOp e = match e with
+	| StringVal strValue -> evalString strValue
+	| Concat (strTypeOp1, stringTypeOp2) -> let strValue = evalStrOp strTypeOp1 in
+											let strOpValue = evalStrOp stringTypeOp2 in
+											strValue ^ strOpValue
+	| LangGet (langTypeOp, intTypeOp) -> let langOpVal = evalLangOp langTypeOp in
+										 let intOpVal = evalIntOp intTypeOp in
+										 List.nth (SetConstructor.elements langOpVal) intOpVal
+and evalIntOp e = match e with
 	| IntVal intVal -> evalInt intVal
 	| Plus (intOp1, intOp2) -> let intOpVal1 = evalIntOp intOp1 in
 							   let intOpVal2 = evalIntOp intOp2 in
@@ -221,6 +224,7 @@ let rec evalIntOp e = match e with
 ;;
 
 
+
 let rec evalBoolOp e = match e with
 	| BooleanVal booleanValue -> evalBool booleanValue
 	| Not boolOp -> let boolOpVal = evalBoolOp boolOp in (not boolOpVal)
@@ -239,17 +243,6 @@ let rec evalBoolOp e = match e with
 	| GreaterThan (intOp1, intOp2) -> let intOpVal1 = evalIntOp intOp1 in
 									  let intOpVal2 = evalIntOp intOp2 in
 									  intOpVal1 > intOpVal2
-;;
-
-
-let rec evalStrOp e = match e with
-	| StringVal strValue -> evalString strValue
-	| Concat (strTypeOp1, stringTypeOp2) -> let strValue = evalStrOp strTypeOp1 in
-											let strOpValue = evalStrOp stringTypeOp2 in
-											strValue ^ strOpValue
-	| LangGet (langTypeOp, intTypeOp) -> let langOpVal = evalLangOp langTypeOp in
-										 let intOpVal = evalIntOp intTypeOp in
-										 List.nth (SetConstructor.elements langOpVal) intOpVal
 ;;
 
 
@@ -300,12 +293,12 @@ let evalAssignOp e = match e with
 
 
 let rec evalOperation e = match e with
-	| Load -> processInput ()  (* TODO: needs to be implemented *)
+	| Load -> processInput ()
 	| Break -> raise BreakLoop
 	| OperationPrint operationPrint -> evalPrintOp operationPrint
 	| OperationDefine operationDefine -> evalDefineOp operationDefine
 	| OperationAssign operationAssign -> evalAssignOp operationAssign
-	| OperationOnTypes operationOnTypes -> ignore (evalTypesOp operationOnTypes)
+	| OperationOnTypes operationOnTypes -> ignore (evalTypesOp operationOnTypes) (* Not interested in the result at this point in the tree *)
 ;;
 
 
@@ -329,6 +322,3 @@ let evalMainRoot e = match e with
 
 
 (* ----------------- End Evaluating expressions --------------------- *)
-
-let print_res e =
-	print_string "DA";;
