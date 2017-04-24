@@ -1,29 +1,51 @@
+/* loading the input from stdin */
 load_input;
+
+/* reading the languages and k */
 def &L1 = read_lang 0;
 def &L2 = read_lang 1;
 def #k = read_int 2;
 
+/* the lenght of the 2 languages */
 def #length1 = lang_length &L1;
 def #length2 = lang_length &L2; 
 
+/* the resulting language which will be printed */
 def &res = {};
+/* loop counter */
 def #count = 0;
 
+/* this loop lasts as long as the counter doesn't exceed 
+the length of the first language and the k */
+
 while (#count < #length1 && #count < #k) do
-	def $s = lang_get &L1 #count;
+	/* in var $s we construct the elements of the resulting language */
+	def $s = lang_get &L1 #count; /* accessor method */
 	$s = "a" ^ $s;
+	/* adding the string represented by $s to the resulting language */
 	&res = lang_add &res $s;
+	/* increment this loop's counter */
 	#count = #count + 1
 end;
 
+/* loop counter */
 def #count2 = 0;
 
+/* second loop iterating through the second language */
+/* first count is still used in this "while" check for efficiency 
+as the resulting language cannot have more than k elements */
+
 while (#count2 < #length2 && #count < #k) do
-	def $s = lang_get &L2 #count2;
+	/* in var $s we construct the elements of the resulting language */
+	def $s = lang_get &L2 #count2; /* accessor method */
 	$s = "b" ^ $s;
+	/* adding the constructed string to the resulting language */
 	&res = lang_add &res $s;
+	/* incrementing "global" counter */
 	#count = #count + 1;
+	/* incrementing this loop's counter */
 	#count2 = #count2 + 1
 end;
 
+/* prints the resulted language until #k */
 print_lang_line &res until #k;

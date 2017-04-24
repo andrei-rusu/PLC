@@ -1,15 +1,22 @@
+/* loading the input from stdin */
 load_input;
+
+/* reading the languages and k */
 def &L1 = read_lang 0;
 def &L2 = read_lang 1;
 def &L3 = read_lang 2;
 def #k = read_int 3;
 
+/* constructing the intersection of the first 2 original languages */
 def &L12 = lang_inter &L1 &L2;
+/* constructing the union of the previously obtained language with the 3rd one */
 def &res1 = lang_union &L12 &L3;
 
+/* constructing the union of the last 2 original languages */
 def &L23 = lang_union &L2 &L3;
+/* constructing the intersection of the 1st language with the previously obtained one */
 def &res2 = lang_inter &L1 &L23;
 
-
+/* prints the 2 resulted languages until #k */
 print_lang_line &res1 until #k;
 print_lang_line &res2 until #k;

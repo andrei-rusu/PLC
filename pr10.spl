@@ -1,28 +1,50 @@
+/* loading the input from stdin */
 load_input;
+
+/* reading the languages and k */
 def &L1 = read_lang 0;
 def &L2 = read_lang 1;
 def #k = read_int 2;
 
+/* constructing the union */
 def &Lunion = lang_union &L1 &L2;
-def #unilength = lang_length &Lunion;
+def #unilength = lang_length &Lunion; /* union length */
+
+/* constructing the intersection */
 def &Linter = lang_inter &L1 &L2;
-def #interlength = lang_length &Linter;
+def #interlength = lang_length &Linter; /* intersection length */
 
+/* the resulting language which will be printed */
 def &res = {};
+/* a global counter */
 def #globalcount = 0;
-def #unicount = 0;
 
+/* loop counter for iterating through the newly constructed union */
+def #unicount = 0;
+/* iterating through the union until reaching #k with the global counter */
 while (#unicount < #unilength && #globalcount < #k) do
-	def $s1 = lang_get &Lunion #unicount;
-	def #intercount = 0;
+	def $s1 = lang_get &Lunion #unicount; /* union accessor method */
+	
+	/* loop counter for the inner loop going through the newly created intersection */
+	def #intercount = 0; 
+	/* this loop also terminates when the global counter exceeds #k */
 	while (#intercount < #interlength && #globalcount < #k) do	
-		def $s2 = lang_get &Linter #intercount;
+		def $s2 = lang_get &Linter #intercount; /* intersection accessor method */
+		
+		/* string $s remembers the concatenation of the current element in the union loop
+		with the current element in the intersection loop */
 		def $s = $s1 ^ $s2;
+		/* adding the newly constructed string to the resulting language */
 		&res = lang_add &res $s;
+		/* incrementing the inner loop count */
 		#intercount = #intercount + 1;
+		/* in order to increase performance, a global counter gets incremented 
+		so that no more than #k elements are added to the resulting language */
 		#globalcount = #globalcount + 1
 	end;
+	/* incrementing the outer loop count */
 	#unicount = #unicount + 1
 end;
 
+/* prints the resulted language until #k */
 print_lang_line &res until #k; 

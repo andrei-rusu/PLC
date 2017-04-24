@@ -1,39 +1,61 @@
+/* loading the input from stdin */
 load_input;
+
+/* reading the languages and k */
 def &L1 = read_lang 0;
 def &L2 = read_lang 1;
 def #k = read_int 2;
 
+/* getting the lengths of both languages */
 def #length1 = lang_length &L1;
 def #length2 = lang_length &L2;
 
+/* the resulting language */
 def &res = {};
 
-def #count1 = 0;
+def #count1 = 0; /* loop counter */
+/* the first loop iterates through the first language as long as the counter doesn't exceed k
+and adds to the resulting language each element of it concatenated with "a" */
 while (#count1 < #length1 && #count1 < #k) do
-	def $s = lang_get &L1 #count1;
+	def $s = lang_get &L1 #count1; /* accessor method */
 	$s = "a" ^ $s;
+	/* adding to the resulting language the newly constructed element */
 	&res = lang_add &res $s;
+	/* increment loop counter */
 	#count1 = #count1 + 1
 end;
 
 
+/* the second loop iterates through the entire second language to avoid corner cases */
+/* the loop concatenates 0 or more b to all the second language's elements */
 def #count2 = 0;
 while (#count2 < #length2) do
 
-	def $s1 = lang_get &L2 #count2;
+	def $s1 = lang_get &L2 #count2; /* accessor method */
+	/* loop counter for the "b-concatenation" */
 	def #bCount = 0;
+	/* will get concatenated a "b" at each iteration of the following loop */
 	def $bConcat = "";
 	
+	/* loop constructing the concatenation of L2 with (b-STAR) */
 	while (#bCount < #k) do	
-		$bConcat = $bConcat ^ "b";
+		/* the string which will be added to the resulting language is a concatenation
+		between the current elemen in the iteration of the second language
+		and the newly constructed "bConcat" */
 		def $s = $s1 ^ $bConcat;
+		/* adding the newly constructed element to the resulting language */
 		&res = lang_add &res $s;
+		
+		/* concatenates an extra "b" at the end of this string accumulator */
+		$bConcat = $bConcat ^ "b";
+		/* increment inner loop counter */
 		#bCount = #bCount + 1
 	end;
 	
+	/* incremenet outer loop counter */
 	#count2 = #count2 + 1
 end;
 
-
+/* prints the resulted language until #k */
 print_lang_line &res until #k;
 
