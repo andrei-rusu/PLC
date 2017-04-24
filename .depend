@@ -1,9 +1,0 @@
-parser.cmo : abstractSyntaxTree.cmo parser.cmi
-parser.cmx : abstractSyntaxTree.cmx parser.cmi
-abstractSyntaxTree.cmo :
-abstractSyntaxTree.cmx :
-evaluator.cmo : abstractSyntaxTree.cmo
-evaluator.cmx : abstractSyntaxTree.cmx
-paragon.cmo : parser.cmi evaluator.cmo
-paragon.cmx : parser.cmx evaluator.cmx
-parser.cmi : abstractSyntaxTree.cmo

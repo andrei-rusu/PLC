@@ -1,7 +1,0 @@
-abstractSyntaxTree.ml
-evaluator.ml
-lexer.mll
-lexer.mll
-paragon.ml
-parser.ml
-parser.mli
