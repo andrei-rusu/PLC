@@ -3,17 +3,27 @@ def &L1 = read_lang 0;
 def &L2 = read_lang 1;
 def #k = read_int 2;
 
-def &L12 = lang_union &L1 &L2;
-def #length = lang_length &L12; 
+def #length1 = lang_length &L1;
+def #length2 = lang_length &L2; 
 
 def &res = {};
 def #count = 0;
 
-while (#count < #length && #count < #k) do
-	def $s = lang_get &L12 #count;
-	$s = $s ^ "a";
+while (#count < #length1 && #count < #k) do
+	def $s = lang_get &L1 #count;
+	$s = "a" ^ $s;
 	&res = lang_add &res $s;
 	#count = #count + 1
+end;
+
+def #count2 = 0;
+
+while (#count2 < #length2 && #count < #k) do
+	def $s = lang_get &L2 #count2;
+	$s = "b" ^ $s;
+	&res = lang_add &res $s;
+	#count = #count + 1;
+	#count2 = #count2 + 1
 end;
 
 print_lang_line &res until #k;

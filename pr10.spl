@@ -3,28 +3,26 @@ def &L1 = read_lang 0;
 def &L2 = read_lang 1;
 def #k = read_int 2;
 
+def &Lunion = lang_union &L1 &L2;
+def #unilength = lang_length &Lunion;
+def &Linter = lang_inter &L1 &L2;
+def #interlength = lang_length &Linter;
+
 def &res = {};
-def #length1 = lang_length &L1; 
-def #length2 = lang_length &L2;
+def #globalcount = 0;
+def #unicount = 0;
 
-def #count = 0;
-if (#length1>0) then
-	def $s = lang_get &L1 0;
-	while (#count<#k) do
+while (#unicount < #unilength && #globalcount < #k) do
+	def $s1 = lang_get &Lunion #unicount;
+	def #intercount = 0;
+	while (#intercount < #interlength && #globalcount < #k) do	
+		def $s2 = lang_get &Linter #intercount;
+		def $s = $s1 ^ $s2;
 		&res = lang_add &res $s;
-		$s = $s ^ "a";
-		#count = #count + 1
-	end
-end;
-
-#count = 0;
-if (#length2>0) then
-	def $s = lang_get &L2 0;
-	while (#count<#k) do
-		&res = lang_add &res $s;
-		$s = $s ^ "b";
-		#count = #count + 1
-	end
+		#intercount = #intercount + 1;
+		#globalcount = #globalcount + 1
+	end;
+	#unicount = #unicount + 1
 end;
 
 print_lang_line &res until #k; 

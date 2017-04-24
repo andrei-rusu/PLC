@@ -3,32 +3,17 @@ def &L1 = read_lang 0;
 def &L2 = read_lang 1;
 def #k = read_int 2;
 
-def #length1 = lang_length &L1;
-def #length2 = lang_length &L2;
-
-def #length1Copy = #length1;
-def #length2Copy = #length2;
-
-def #maxLengthRes = #length1 + #length2;
+def &L12 = lang_inter &L1 &L2;
+def #length = lang_length &L12;
 
 def &res = {};
 def #count = 0;
 
-while (#count < #k && #count < #maxLengthRes) do
-	if (#length1 > 0) then
-		def $s = lang_get &L1 (#length1Copy - #length1);
-		$s = $s ^ "a";
-		&res = lang_add &res $s;
-		#length1 = #length1 - 1;
-		#count = #count + 1
-	end;
-	if (#length2 > 0) then
-		def $s = lang_get &L2 (#length2Copy - #length2);
-		$s = $s ^ "b";
-		&res = lang_add &res $s;
-		#length2 = #length2 - 1;
-		#count = #count + 1
-	end
+while (#count < #length && #count < #k) do
+	def $s = lang_get &L12 #count;
+	$s = "a" ^ $s;
+	&res = lang_add &res $s;
+	#count = #count + 1
 end;
 
 print_lang_line &res until #k;
